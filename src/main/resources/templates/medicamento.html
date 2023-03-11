@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+
+<!--todas las etiquetas que maneja lo referencio a th-->
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+	<meta charset="ISO-8859-1">
+	<title>Mantenimiento Medicamento</title>
+
+	<!-- Bootstrap CSS -->
+	<link th:href="@{/resources/css/bootstrap.min.css}" rel="stylesheet">
+	<link th:href="@{/resources/css/dataTables.bootstrap5.min.css}" rel="stylesheet">
+	<link th:href="@{/resources/datepicker/bootstrap-datepicker.css}" rel="stylesheet">
+	<link th:href="@{/resources/css/bootstrap-icons.css}" rel="stylesheet">
+
+	<link href="http://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" rel="stylesheet">
+
+	<link rel="stylesheet" th:href="@{/resources/alertifyjs/css/alertify.css}">
+	<link rel="stylesheet" th:href="@{/resources/alertifyjs/css/alertify.min.css}">
+
+
+	<link rel="preconnect" href="https://fonts.gstatic.com">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+	<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;600&display=swap" rel="stylesheet">
+	<script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+
+	<style>
+		.modal-header {
+			color: #fff;
+			background: #428bca;
+			display: flex;
+			justify-content: center;
+		}
+
+		.help-block {
+			color: red;
+		}
+
+		.form-group.has-error .form-control-label {
+			color: red;
+		}
+
+		.form-group.has-error .form-control {
+			border: 1px solid red;
+			box-shadow: 0 0 0 0.2rem rgba(250, 16, 0, 0.18);
+		}
+
+		.alertify .ajs-dialog {
+			top: 50%;
+			transform: translateY(-50%);
+			margin: auto;
+		}
+
+		.ajs-header {
+			background-color: #286090 !important;
+			color: white !important;
+			/*text-align: center;*/
+			font-size: 18px;
+			font-weight: bold;
+		}
+
+		.ajs-ok {
+			color: #fff;
+			background-color: #007bff;
+			border-color: #007bff;
+		}
+
+		.ajs-cancel {
+			color: #fff;
+			background-color: #dc3545;
+			border-color: #dc3545;
+		}
+	</style>
+
+</head>
+
+<body>
+
+    <!-- para que pueda consumir el frag-->
+	<div th:insert="plantilla/UITemplate :: cabecera"></div>
+	<div class="container">
+
+		<h3 class="text-center">LISTADO DE MEDICAMENTOS ori</h3>
+		<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalMedicamento">
+			Nuevo Medicamento
+		</button>
+		
+		
+		<!-- Modal PARA REGISTRAR-->
+		<div class="modal fade" id="modalMedicamento" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+			aria-labelledby="staticBackdropLabel" aria-hidden="true">
+			<div class="modal-dialog modal-dialog-centered modal-lg">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h5 class="modal-title" id="staticBackdropLabel">MEDICAMENTO</h5>
+						<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+					</div>
+
+					<div class="modal-body">
+						<!--1.llamamos al controler 2.al metdo -->
+						<form id="formDocente" action="/medicamento/grabar" method="post" class="row g-3">
+							<div class="form-group col-md-4">
+								<label for="validationCustomUsername" class="form-label fw-bold">Código</label>
+								<div class="input-group has-validation">
+									<span class="input-group-text" id="inputGroupPrepend"><i
+											class="bi bi-file-person"></i></span>
+									<input type="text" class="form-control" name="codigo" id="idCodigo" readonly
+										value="0">
+								</div>
+							</div>
+							<div class="form-group col-12">
+								<label for="validationCustomUsername" class="form-label fw-bold">Nombre</label>
+								<div class="input-group has-validation">
+									<span class="input-group-text" id="inputGroupPrepend"><i
+											class="bi bi-file-person"></i></span>
+									<input type="text" class="form-control" name="nombre" id="idNombre">
+								</div>
+							</div>
+							<div class="form-group col-12">
+								<label for="validationCustomUsername"
+									class="form-label fw-bold">Descripción(Detalle)</label>
+								<div class="input-group has-validation">
+									<textarea class="form-control" id="idDescripcion" rows="6" name="descripcion"
+										placeholder="Ingresar descripción" 
+										style="padding-left: 5px!important;"></textarea>
+								</div>
+							</div>
+							<div class="form-group col-md-4">
+								<label for="validationCustomUsername" class="form-label fw-bold">Stock</label>
+								<div class="input-group has-validation">
+									<span class="input-group-text" id="inputGroupPrepend"><i
+											class="bi bi-bank2"></i></span>
+									<input type="text" class="form-control" name="stock" id="idStock">
+								</div>
+							</div>
+							<div class="form-group col-md-4">
+								<label for="validationCustomUsername" class="form-label fw-bold">Precio</label>
+								<div class="input-group has-validation">
+									<span class="input-group-text" id="inputGroupPrepend"><i
+											class="bi bi-coin"></i></span>
+									<input type="text" class="form-control" name="precio" id="idPrecio">
+								</div>
+							</div>
+							<div class="form-group col-md-4">
+								<label for="validationCustomUsername" class="form-label fw-bold">Fecha
+									Vencimiento</label>
+								<div class="input-group has-validation">
+									<span class="input-group-text" id="inputGroupPrepend"><i
+											class="bi bi-calendar-date"></i></span>
+									<input type="text" style="background-color:#aed6f1" class="form-control" id="usr1"
+										name="fecha" placeholder="YYYY-MM-DD" autocomplete="off">
+
+								</div>
+							</div>
+							<div class="form-group col-md-6">
+								<label for="validationCustomUsername" class="form-label fw-bold">Tipo
+									Medicamento</label>
+								<div class="input-group has-validation">
+									<span class="input-group-text" id="inputGroupPrepend"><i
+											class="bi bi-prescription2"></i></span>
+									<select class="form-select form-control" name="tipo" id="idTipo" required>
+										<option selected value=" ">[Seleccione med Tipo Medicamento]</option>
+										
+									</select>
+								</div>
+							</div>
+							
+							<div class="form-group col-md-6">
+								<label for="validationCustomUsername" class="form-label fw-bold">
+									Laboratorio</label>
+								<div class="input-group has-validation">
+									<span class="input-group-text" id="inputGroupPrepend"><i
+											class="bi bi-prescription2"></i></span>
+									<select class="form-select form-control" name="laboratorio" id="idLaboratorio">
+										<option value=" ">[Seleccione Laboratorio]</option>
+										<option th:each="bean:${labora}"
+										            th:utext="${bean.nombre}"
+											        th:value="${bean.codigo}" />
+									</select>
+								</div>
+							</div>
+
+
+							<div class="modal-footer">
+								<button type="submit" class="btn btn-primary"><i class="bi bi-save2"></i>
+									Registrar</button>
+								<button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><i
+										class="bi bi-x-circle-fill"></i> Cerrar</button>
+							</div>
+						</form>
+					</div>
+
+				</div>
+			</div>
+		</div>
+		<!--fin modal PARA REGISTRAR-->
+		
+		<!--fin modal PARA foto-->
+		<div class="modal fade" id="modalImg" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+			aria-labelledby="staticBackdropLabel" aria-hidden="true">
+			<div class="modal-dialog modal-dialog-centered modal-lg">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h5 class="modal-title" id="staticBackdropLabel">Foto</h5>
+						<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+					</div>
+					<div class="modal-body">
+						<form id="formDocente" action="/medicamento/subir-archivo" enctype="multipart/form-data" method="post"
+							class="row g-3">
+							<input type="hidden" class="form-control" name="codigo" id="idCodigoFoto" >
+							 <img id="foto-medicamento" style="width: 150px;">	
+					       
+							<div class="form-group col-12">
+								<label for="validationCustomUsername" class="form-label fw-bold">Archivo</label>
+								<div class="input-group has-validation">
+									<span class="input-group-text" id="inputGroupPrepend"><i
+											class="bi bi-file-person"></i></span>
+									<input type="file" class="form-control" name="data">
+								</div>
+							</div>	
+							<div class="modal-footer">
+								<button type="submit" class="btn btn-primary"><i class="bi bi-save2"></i> Grabar</button>
+								<button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><i
+										class="bi bi-x-circle-fill"></i> Cerrar</button>
+							</div>
+						</form>
+					</div>
+				</div>
+			</div>
+		</div>
+		
+		
+		<div class="mt-5">
+			<table id="tableDocente" class="table table-striped" style="width:100%">
+				<thead>
+					<tr>
+						<th>Código</th>
+						<th>Nombre</th>
+						<th>Stock</th>
+						<th>Precio</th>
+						<th>Fecha</th>
+						<th>Tipo</th>
+						<th></th>
+						<th></th>
+						<th></th>
+						
+						
+					</tr>
+				</thead>
+				<tbody>
+					<tr th:each="row:${lista}">
+						<td th:text="${row.codigo}"></td>
+						<td th:text="${row.nombre}"></td>
+						<td th:text="${row.stock}"></td>
+						<td th:text="${row.precio}"></td>
+						<td th:text="${row.fecha}"></td>
+						<td th:text="${row.tipo.nombre}"></td>
+						
+						
+						<td><a class="btn btn-info btn-editar" data-bs-toggle="modal"
+								data-bs-target="#modalMedicamento"><i class="bi bi-pencil"></i></a></td>
+						<td><a class="btn btn-danger btn-eliminar"><i class="bi bi-trash-fill"></i></a></td>
+						<!--recuperar el valor del hr -->
+						<td><a th:href="${row.nombreArchivo}"  class="btn btn-primary btn-img" data-bs-toggle="modal" data-bs-target="#modalImg">
+						<i class="bi bi-pencil"> </i></a></td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+
+
+	</div>
+
+	<!-- JS principal -->
+	<script th:src="@{/resources/js/jquery-3.5.1.js}"></script>
+
+	<!-- Option 1: Bootstrap Bundle with Popper -->
+	<script th:src="@{/resources/js/bootstrap.bundle.min.js}"></script>
+
+	<!-- JS para la tabla -->
+	<script src="https://cdn.datatables.net/1.12.1/js/jquery.dataTables.min.js"></script>
+	<script src="https://cdn.datatables.net/1.12.1/js/dataTables.bootstrap5.min.js"></script>
+
+	<!--JS para validar  -->
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-validator/0.4.0/js/bootstrapValidator.js"></script>
+
+	<!--JS para Calendario  -->
+	<script th:src="@{/resources/datepicker/bootstrap-datepicker.js}"></script>
+
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+
+	<script th:src="@{/resources/alertifyjs/alertify.js}"></script>
+	<script th:src="@{/resources/alertifyjs/alertify.min.js}"></script>
+	
+	<script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+
+	<!--este script es una etiquete de javascript
+	por eso lo manipulo  -->
+	<script th:inline="javascript" th:if="${MENSAJE!=null}">
+	
+        let msj
+        msj= /*[[${MENSAJE}]]*/
+		toastr.success(msj, toastr.options = {
+			"timeOut": "2000",
+			"positionClass ": " toast-top-right ",
+		});
+		
+		
+	</script>
+
+
+	<script>
+	//una variable glabal
+	let codigoTipo=0;
+	
+		$(function () {
+			$('#usr1').datepicker({
+				'format': 'yyyy-mm-dd',
+				'autoclose': true
+			});
+
+		});
+		
+		//asignar evento clik atodos los botones con nombre de clase
+		//btn-editar 
+		$(document).on("click",".btn-editar",function(){
+			//leer la columna codigo de la fila actual seg-un el boton que se hizo clik 
+			let cod;
+			//$(this) ==>es el botn que pulsamos
+			//parents("tr") ==>se encuentra dentro deuna fila
+			//find("td")[0] ==> la primera columna
+			//innerHTML ==> sacar copia de lo que se encuentra en esa columna
+			cod=$(this).parents("tr").find("td")[0].innerHTML;
+			//get
+			//esa ruta buscar devuelve un json
+			//lo estamos guardando en parametro response
+			$.get("buscar?codigo="+cod,function(response){
+				console.log(response);
+				$("#idCodigo").val(response.codigo);
+				$("#idNombre").val(response.nombre);
+				$("#idDescripcion").val(response.descripcion);
+				$("#idPrecio").val(response.precio);
+				$("#idStock").val(response.stock);
+				$("#usr1").val(response.fecha);
+				//$("#idTipo").val(response.tipo.codigo);
+				
+				//esto es para marcar el combo laboratorio
+				$("#idLaboratorio").val(response.tipo.labo.codigo);			
+				//similar a esto //$("#idTipo").val(response.tipo.codigo);
+				codigoTipo=response.tipo.codigo;
+				//ejecutar el evento change del combo laboratorio
+				//ala hora de cargar editar
+				$("#idLaboratorio").trigger("change");
+			})	
+		})
+		
+		  $(document).on("click",".btn-eliminar",function(){
+			   let cod;
+			//$(this) ==>es el botn que pulsamos
+			//parents("tr") ==>se encuentra dentro deuna fila
+			//find("td")[0] ==> la primera columna
+			//innerHTML ==> sacar copia de lo que se encuentra en esa columna
+			cod=$(this).parents("tr").find("td")[0].innerHTML;
+			  alertify.confirm("SISTEMA", "Seguro de eliminar!",
+				  function () {
+					//estto es si elimina
+                     window.location="eliminar?codigo="+cod;
+				  },
+				  function () {
+					//esto es si no
+					  alertify.error('Cancelado!');
+				  });
+								
+			})	
+			
+			
+		//(esto es para combo dependiente)
+		//idlaboratorio (es el combo)
+		//asignar evento change ala etiqueta select con atributo id "idLaboratorio"
+		//que se va a disparar cada ves que el usuario seleccione algo
+		//nombre clase "btn-editar"
+      $(document).on("change","#idLaboratorio",function(){
+	           //codLab= almacena el codigo seleccionado en el combo
+	         let codLab= $(this).val();
+              $.get("buscarPorLaboratorio?codigo="+codLab,function(response){
+	                  //limpiar el combo para que no acumule
+	                  $("#idTipo").empty().append("<option selected >[seleccione aba tipo medicamento]</option>");
+	                  //bucle
+	                  //para llenar el combo tipo
+	                  //item(el valor en esa pocision)
+	                  $.each(response,function(index,item){
+		                         $("#idTipo").append("<option value='"+item.codigo+"'>"+item.nombre+"</option>");
+	                       })
+	                     
+	                    
+		                           $("#idTipo").val(codigoTipo);
+                })
+           })
+           
+           
+           //para la imagen
+           $(document).on("click",".btn-img",function(){
+			//recuperar el href del botón seleccionado
+			let img=$(this).attr("href");
+			//leer la columna código de la fila actual según el botón que se hizo click
+			let cod;
+			cod=$(this).parents("tr").find("td")[0].innerHTML;
+			$("#idCodigoFoto").val(cod);
+			//alert(img);
+			if(img=="")
+				$("#foto-medicamento").attr("src",'/DatosImg/descarga.png');
+			else
+				$("#foto-medicamento").attr("src",'/DatosImg/'+img);	
+			
+		})	
+		
+	</script>
+	
+	
+	
+	
+
+	<script>
+		$(document).ready(function () {
+			$('#tableDocente').DataTable();
+			//validación
+			$('#formDocente').bootstrapValidator({
+				fields: {
+					nombre: {
+						validators: {
+							notEmpty: {
+								message: 'Campo nombre es obligatorio'
+							}
+						}
+					},
+					descripcion: {
+						validators: {
+							notEmpty: {
+								message: 'Campo descripción es obligatorio'
+							}
+						}
+					},
+					stock: {
+						validators: {
+							notEmpty: {
+								message: 'Campo materno es obligatorio'
+							}
+						}
+					},
+					precio: {
+						validators: {
+							notEmpty: {
+								message: 'Campo hijos es obligatorio'
+							}
+						}
+					},
+					tipo: {
+						validators: {
+							notEmpty: {
+								message: 'Campo tipo es obligatorio'
+							}
+						}
+					},
+					fecha: {
+						//selector:'#usr1',   
+						validators: {
+							notEmpty: {
+								message: 'Seleccione fecha '
+							},
+							date: {
+								format: 'YYYY-MM-DD',
+								message: 'The format is dd/mm/yyyy'
+							},
+						}
+					},
+
+
+				}
+			})
+			$('#usr1').on('changeDate', function (e) {
+				$('#formDocente').data('bootstrapValidator').updateStatus('fecha', 'VALIDATED');
+			})
+			$('#modalMedicamento')
+				.on('hidden.bs.modal', function () {
+					$("#formDocente").bootstrapValidator('resetForm', true);
+					$("#idCodigo").val(0)
+				})
+
+		});
+	</script>
+
+
+</body>
+<script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+
+</html>
